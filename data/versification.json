@@ -1,0 +1,17 @@
+{
+  "_doc": "TEMPORARY local versification assignments (per aligned iso) — a STOPGAP until bcv-commons/bibles publishes the per-text `versification` field, at which point the aligner should SOURCE this from there (the curated overlay: meta/texts/<iso>/<textId>.json → `versification`) and this file goes away. Values use the bibles schema enum: protestant | hebrew | septuagint | vulgate | orthodox | catholic | other. Only NON-protestant entries actually matter for remapping (protestant = KJV-standard = identity with our source numbering); the protestant rows are recorded for completeness / future-proofing.",
+  "_supersede": "bcv-commons/bibles meta/texts/<iso>/<textId>.json .versification (see internal-docs/bcv-query-wishlist.md hand-over)",
+  "_rus_note": "rus = HEBREW (Original/Masoretic), NOT orthodox/lxx: russyn OT=23,214 verses fingerprints to org/hebrew (23,213) — 150 Psalms — not Russian Orthodox rso (23,406, Psalm 151) nor Rahlfs-LXX (22,646). Confirmed by eBible/BibleNLP (aligns to vref.txt 'Original') + our earlier empirical test (orthodox→lxx made rus WORSE 44%→42%). The `hebrew` scheme (bcv-commons/versification, 2031 diffs) is the remap to test.",
+  "rus": "hebrew",
+  "spa": "protestant",
+  "fra": "protestant",
+  "hau": "protestant",
+  "hin": "protestant",
+  "asm": "protestant",
+  "ben": "protestant",
+  "ind": "protestant",
+  "arb": "protestant",
+  "eng": "protestant",
+  "swk": "protestant",
+  "swe": "protestant"
+}

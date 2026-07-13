@@ -1,0 +1,31 @@
+out/
+__pycache__/
+*.egg-info/
+*.pyc
+# copied-in spine.db / hbo.db — provided out-of-band, never committed
+*.db
+# private working notes / handover — not official (Claude auto-loads it)
+CLAUDE.local.md
+# copied-in target Bibles (USJ) — pilot text, provided out-of-band
+data/usj-*/
+# copied-in bcv-commons/strongs datasets (gold attestations, gloss priors)
+data/resources/
+# lexeme-alignments bulk data — regenerated per language, published out-of-band (HF / object storage).
+# Only manifest.json + README.md stay in git (see lexeme-alignments/README.md).
+lexeme-alignments/iso=*/
+# CDN PKF download cache — bulk, re-fetched by pin
+data/_pool/
+# Node edge converter deps (PKF->USFM) — installed locally, not committed
+pkf2usfm/node_modules/
+# karnbibeln lexicon cache (scraped reference for the diff test)
+data/karnbibeln/
+# senses_attested bulk data — same as lexeme-alignments; only manifest.json committed
+senses_attested/iso=*/
+# aligned_mwe bulk data (contiguous multi-word expressions) — same pattern; only manifest.json committed
+aligned_mwe/iso=*/
+internal-docs/
+# prior-pack pulled from bcv-commons/prior-pack (HF, CC-BY) — bulk parquet + HF cache git-ignored;
+# resources/prior-pack/manifest.json + README.md stay tracked as the version pin (see PROVENANCE).
+resources/prior-pack/*.parquet
+resources/prior-pack/.cache/
+resources/prior-pack/.gitattributes

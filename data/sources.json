@@ -1,0 +1,72 @@
+{
+  "arb": {
+    "edition": "arb_vdv",
+    "license_url": "https://ebible.org/Scriptures/details.php?id=arb-vd",
+    "provider": "bible.helloao.org"
+  },
+  "arbn": {
+    "edition": "ARBNAV",
+    "license_url": "https://ebible.org/Scriptures/details.php?id=arbnav",
+    "provider": "bible.helloao.org"
+  },
+  "asm": {
+    "edition": "asm_irv",
+    "license_url": "https://ebible.org/Scriptures/details.php?id=asmfb",
+    "provider": "bible.helloao.org"
+  },
+  "ben": {
+    "edition": "ben_irv",
+    "license_url": "https://ebible.org/Scriptures/details.php?id=benirv",
+    "provider": "bible.helloao.org"
+  },
+  "eng": {
+    "edition": "BSB",
+    "license_url": "https://berean.bible/",
+    "provider": "bible.helloao.org"
+  },
+  "engy": {
+    "edition": "eng_ylt",
+    "license_url": "https://ebible.org/Scriptures/details.php?id=engylt",
+    "provider": "bible.helloao.org"
+  },
+  "fra": {
+    "edition": "fraLSG (Louis Segond 1910)",
+    "license_url": "https://ebible.org/fraLSG/",
+    "provider": "eBible.org"
+  },
+  "hau": {
+    "edition": "HAUBIB (Hausa Contemporary Bible / OHCB)",
+    "license_url": "https://ebible.org/hausa/",
+    "provider": "eBible.org"
+  },
+  "hin": {
+    "edition": "HINIRV",
+    "license_url": "https://ebible.org/Scriptures/details.php?id=hin2017",
+    "provider": "bible.helloao.org"
+  },
+  "ind": {
+    "edition": "ind_C01",
+    "license_url": "https://cdn.bibel.wiki/pkf/ind/app-config.json",
+    "provider": "cdn.bibel.wiki"
+  },
+  "rus": {
+    "edition": "rus_syn",
+    "license_url": "https://ebible.org/Scriptures/details.php?id=russyn",
+    "provider": "bible.helloao.org"
+  },
+  "spa": {
+    "edition": "spa_r09",
+    "license_url": "https://ebible.org/Scriptures/details.php?id=spaRV1909",
+    "provider": "bible.helloao.org"
+  },
+  "swe": {
+    "edition": "swe_fol",
+    "license_url": "https://ebible.org/Scriptures/details.php?id=swef",
+    "provider": "bible.helloao.org"
+  },
+  "swk": {
+    "edition": "swe_svk",
+    "license_url": "https://ebible.org/Scriptures/details.php?id=swe",
+    "provider": "bible.helloao.org"
+  }
+}

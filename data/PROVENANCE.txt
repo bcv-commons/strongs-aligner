@@ -1,0 +1,80 @@
+lexeme-spine.db — LEXEME-anchored backbone (the current spine; spine_words table)  [ALIGNER_SPINE_DB]
+  from bcv-commons/shoresh MACULA export, 2026-07, CC-BY. 607,255 words (finer MACULA tokenization).
+  anchor: lexeme = lang:augmented-strong (e.g. hbo:0871a) ; strong = augment-stripped rollup
+    (Hebrew equivalence-canonicalized for spine.db parity). Adds gloss + role columns.
+  sources: Clear-Bible/macula-greek@main (Nestle1904) + macula-hebrew@main (WLC)
+  pin: spine_meta.macula_spine_sha256 = a3dbc0bbe95e19e0b45b5dbc533ae4b82eb61d66f1f0e817c87bb8628ac5d0ac
+  contract: docs/data-contracts.md §1. Provided out-of-band; gitignored (*.db).
+
+spine.db — legacy STEPBible bare-Strong's backbone (superseded by lexeme-spine.db; kept for parity checks)
+  copied 2026-07 from bcv-query monorepo (shoresh/spine/spine.db)
+  STEPBible-derived, CC-BY: uhb_tag v2.1.32 / ugnt_tag v0.34 ; 443,508 words
+  stable reference — refresh only on a deliberate STEPBible upgrade
+  (rebuild path: monorepo shoresh/spine/parse.py). Provided out-of-band; gitignored.
+
+usj-ind/ — Indonesian target text (67 USJ books)
+  derived 2026-07 from cdn.bibel.wiki PKF ind_C01 (ind_C01.CN8xM8h_.pkf)
+  pipeline: PKF -> USFM (Proskomma, example/scripts/export_usfm.mjs) -> USJ (usfmtc.outUsj)
+  license: Public Domain (verbal 2026-07, written confirmation pending) — experiment-only
+  proper long-term home: bcv-commons/bibles recipe layer (pinned). Provided out-of-band; gitignored.
+
+resources/strongs/attestations/*.parquet — GOLD word-alignments (10 languages)
+  copied 2026-07 from bcv-query monorepo resources/strongs/attestations/
+  source: Clear-Bible/Alignments (manual); base texts per-lang; CC-BY-SA-4.0 (see resources/strongs/README.md)
+  langs: arb asm ben eng fra hau hin por rus spa  (NO Indonesian — Clear has no ind gold)
+  schema: strong, lemma, surface, ref, target_id, source_id, method, source_corpus, base_text
+  use: benchmark a produced lexeme-alignments/<lang>.tsv against attestations/<lang> (gold). ALIGNER_RESOURCES=data/resources.
+
+usj-fra-lsg/ — French target text (66 USJ books, WHOLE BIBLE) — GOLD BENCHMARK + full alignment
+  source: eBible.org fraLSG — Louis Segond 1910, PUBLIC DOMAIN (ebible.org/fraLSG)
+  pipeline: eBible USFM zip -> usfmtc.outUsj -> USJ (aligner NN-BOOK.json numbering, OT+NT)
+  WHY THIS EDITION: gold attestations/fra base_text=LSG — matching editions is required for a
+    valid benchmark (else surfaces differ = measuring translation, not aligner quality).
+  use: run the aligner on this -> produced lexeme-alignments/fra -> score vs strongs/attestations/fra (gold).
+  NOTE 2026-07-09: fra was initially aligned NT-only; OT now aligned (96.1% cov) → lexeme-alignments/fra is
+    whole-Bible (60,276 rows) + senses_attested/fra built. Clears shoresh's "publish OT for all langs" ask.
+
+prior-pack/ — LANGUAGE-INDEPENDENT prior pack, PULLED from bcv-commons/prior-pack (HF dataset, CC-BY-4.0)
+  one row per MACULA lexeme (14,720): keyness, lxx_greek/lxx_hebrew, senses inventory, neighbors,
+  xling_confidence — feeds the recipes (R1 keyness-filter, R2 sense-surface, R3 gap-map, LXX NT-gap).
+  PIN — prior_pack.parquet sha256: 9874ac4a5ecd88f8f6a1bc74c8bf5be408d78c67bbd98bd501ddeb882bdb13a8
+  pull: huggingface_hub.snapshot_download(repo_id='bcv-commons/prior-pack', repo_type='dataset',
+        local_dir='resources/prior-pack'). Bulk parquet gitignored; manifest.json + README committed as
+  the pin. Rebuilt/re-pulled only on a shoresh component bump. Contract: internal-docs/aligner-handover.md.
+
+resources/lexeme-alignments_gold_derived/ — {fra,por,hau}.tsv
+  copied from monorepo resources/lexeme-alignments/ — CAUTION: these were DERIVED FROM the Clear gold
+  ("fra/LSG via Clear-Bible/Alignments manual word alignment"), so scoring them vs the Clear gold
+  is CIRCULAR (~100%). NOT aligner output. Use only as an upper-bound reference lexicon.
+
+usj-hau-ohcb/ — Hausa target text (39 OT USJ books) — 2nd gold benchmark (typologically distant)
+  source: eBible.org "hausa" (HAUBIB) = Hausa Contemporary Bible / OHCB, Biblica © 2009,2020
+    (redistributable via eBible; experiment-only, gitignored — NOT public domain)
+  pipeline: eBible USFM zip -> usfmtc.outUsj -> USJ (OT only). gold attestations/hau base_text=OHCB (match).
+  why: Chadic/Afro-Asiatic, lower-resource — tests whether the method generalizes off European/Latin
+    high-resource langs toward the Indonesian-like population (French alone = flattering case).
+
+lexeme-spine.db — LEXEME-ANCHORED backbone (MACULA) — data-contract §1
+  built 2026-07 in bcv-query monorepo: python -m macula.build_spine_words
+  source: Clear-Bible macula-greek@main (Nestle1904) + macula-hebrew@main (WLC), CC-BY-4.0
+  607,255 tokens; anchor lexeme=lang:augmented-strong (e.g. hbo:0871a); strong=augment-stripped rollup;
+  is_content=class in {noun,verb,adj}; gloss on 99.1%; role on 46,782; morph absent (MACULA carries none).
+  PIN — macula_spine_sha256 (input): a3dbc0bbe95e19e0b45b5dbc533ae4b82eb61d66f1f0e817c87bb8628ac5d0ac
+        build sha256 (this artifact):  c954889d951e1a9082557dac4b7a31b4803705670371d604a0be6da913ad8b04
+  use: set ALIGNER_SPINE_DB=data/lexeme-spine.db (has_lexeme=True). Finer tokenization than spine.db
+       (prefixes split); re-pin + re-align on a deliberate MACULA bump.
+
+  UPDATE 2026-07-09: rebuilt with per-occurrence `key` column (MACULA node id) — enables the
+  BHSA↔MACULA sense bridge join (lexeme-spine.key = bridge.key). Additive; aligner SELECT unaffected.
+  new build sha256: 8808bd09c4c880678495d3133fd20eb0c90e2ef51b512e43111ec45c45534127
+
+  UPDATE 2026-07-09b: enriched with BHSA sense/sense_conf/sense_source via the bridge
+  (macula.enrich_spine_senses) — 227,400 OT tokens carry homograph-precise sense. new sha256: ac0baa98af532e74759506e7ca630cbdd07121a4d846d0d9d453fd5984105ca7
+
+  UPDATE 2026-07-09c: + BHSA `lex` + `stem` (binyan) columns alongside sense — lets the
+  aligner emit shoresh canonical sense key (lex, stem, sense). new sha256: 752f77a7d0a77d0a09489ac1cac5bf89c762fae9b5d58d69db9899c45a25ad71
+
+  UPDATE 2026-07-09d: FREED TO CC-BY — dropped BHSA `lex`; `stem` now = MACULA binyan (CC-BY,
+  full names qal/piel/hiphil); sense# = in-house hebrew-context. Sense key is (lexeme, stem, sense),
+  fully CC-BY → publishable. new sha256: dc353d340215339093f453d8765af1fabf8b444dcd917b4d73a3d056b22ebb31
+  (MACULA input also refreshed this cycle → macula_spine_sha256 = a3dbc0bb…; header pin updated to match.)
