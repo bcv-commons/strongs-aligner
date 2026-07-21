@@ -366,11 +366,12 @@ def main(argv=None):
                          "(e.g. produced eng_ylt scored vs eng gold)")
     ap.add_argument("--base-text", default=None,
                     help="[clear] restrict gold to one edition/base_text (e.g. YLT) when it pools several")
-    ap.add_argument("--morph-remap", action="store_true",
+    ap.add_argument("--morph-remap", action=argparse.BooleanOptionalAction, default=True,
                     help="[clear] translate our lemma-level Greek Strong's (e.g. G1510) to Clear's "
                          "traditional tense/case-specific numbering (e.g. G2258) via source morphology "
                          "before scoring — see greek_morph_strong.py. Corrects an artificial accuracy "
-                         "gap on irregular/suppletive Greek words; does not affect published data.")
+                         "gap on irregular/suppletive Greek words; does not affect published data. "
+                         "DEFAULT ON — pass --no-morph-remap for the old (understated) NT scores.")
     # lexicon
     ap.add_argument("--testament", choices=["greek", "hebrew"], help="[lexicon] required")
     ap.add_argument("--lexicon", choices=list(LEX_SOURCES), default="karnbibeln", help="[lexicon] source")
