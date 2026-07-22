@@ -46,7 +46,11 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--iso", required=True)
-    ap.add_argument("--source", choices=["pkf", "helloao"], default="pkf", help="text source (default pkf)")
+    ap.add_argument("--source", choices=["pkf", "helloao", "auto"], default="pkf",
+                    help="text source (default pkf). auto = resolve via catalog_source.py's "
+                         "cdn.bibel.wiki cross-source index (pkf/helloAO/DBT coverage) and dispatch "
+                         "to whichever of pkf/helloAO it recommends — DBT-native-only languages are "
+                         "not fetchable this way, see catalog_source.py docstring.")
     ap.add_argument("--translation", default=None, help="helloAO translation id (required for --source helloao), e.g. swe_fol")
     ap.add_argument("--lang-name", default=None)
     ap.add_argument("--method", default="eflomal")
@@ -70,19 +74,45 @@ def main() -> int:
         env["ALIGNER_SPINE_DB"] = str(args.spine_db)
 
     # 1) ingest — PKF or helloAO → pin → USJ (skip if the text is already local)
+    source, translation = args.source, args.translation
+    if source == "auto":
+        from lexeme_aligner.catalog_source import resolve
+        from lexeme_aligner.run_pilot import OT_BOOKS, NT_BOOKS
+        # --book is mutually exclusive with --nt/--ot, so testament must come from the actual
+        # requested books when --book is used, not just args.nt (a bare `args.nt` check here would
+        # silently resolve an NT --book request against OT gold).
+        if args.book:
+            requested = {b.upper() for b in args.book}
+            testament = "nt" if requested & set(NT_BOOKS) else "ot"
+        else:
+            testament = "nt" if args.nt else "ot"
+        plan = resolve(args.iso, testament)
+        if plan is None:
+            raise SystemExit(f"[pipeline] --source auto: '{args.iso}' not found in the "
+                             f"cdn.bibel.wiki catalog for testament={testament}")
+        if not plan["fetchable"]:
+            raise SystemExit(f"[pipeline] --source auto: {plan['note']}")
+        source = plan["source"]
+        if source == "helloao":
+            translation = plan["param"]
+        print(f"[pipeline] --source auto resolved '{args.iso}' -> {source}"
+              + (f" (translation={translation})" if translation else "")
+              + (f" · {len(plan['alternates'])} alternate edition(s) also cataloged" if plan["alternates"] else ""),
+              file=sys.stderr)
+
     if args.skip_ingest:
         print(f"[pipeline] skip ingest — using existing {usj}", file=sys.stderr)
-    elif args.source == "pkf":
+    elif source == "pkf":
         _run("cdn_source", "--iso", args.iso, "--to-usj", usj, "--converter", args.converter, env=env)
     else:  # helloao — needs a translation id; scope the fetch to the align books
-        if not args.translation:
+        if not translation:
             raise SystemExit("[pipeline] --source helloao requires --translation (e.g. swe_fol)")
         from lexeme_aligner.run_pilot import OT_BOOKS, NT_BOOKS
         ingest_books = (OT_BOOKS + NT_BOOKS if args.whole
                         else [b.upper() for b in args.book] if args.book
                         else NT_BOOKS if args.nt else OT_BOOKS)
         book_args = [a for b in ingest_books for a in ("--book", b)]
-        _run("helloao_source", "--translation", args.translation, "--iso", args.iso,
+        _run("helloao_source", "--translation", translation, "--iso", args.iso,
              "--to-usj", usj, *book_args, env=env)
 
     # 2) align — eflomal over the chosen scope (default OT). Whole-Bible = two passes: OT (Hebrew

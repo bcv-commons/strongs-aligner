@@ -8,16 +8,16 @@
       "books": 66,
       "by_base_text": {
         "ARBNAV": 147509,
-        "arb_vdv": 133428
+        "arb_vdv": 128220
       },
       "by_method": {
         "eflomal": 188244,
-        "gapfill": 4,
-        "gloss": 92689
+        "gapfill": 18,
+        "gloss": 87467
       },
-      "content_sha256": "573a37aed734cf07cca851ac8f5e164dee13c1aed3e7634f909e4d9adc54ccc7",
+      "content_sha256": "d01e508410dad99e7cac47083806ca7f0f19c98662d19ed60419d0e1da95d2ae",
       "file": "iso=arb/data.parquet",
-      "hi_conf_ge_0.9": 224246,
+      "hi_conf_ge_0.9": 218883,
       "language": "Arabic",
       "lexemes": 13954,
       "methods": [
@@ -26,7 +26,7 @@
         "gapfill"
       ],
       "min_count": 1,
-      "rows": 280937,
+      "rows": 275729,
       "sources": {
         "ARBNAV": {
           "edition": "ARBNAV",
@@ -40,7 +40,7 @@
         }
       },
       "strongs": 13082,
-      "surfaces": 92605,
+      "surfaces": 92620,
       "testament": "NT+OT"
     },
     "asm": {
@@ -56,7 +56,7 @@
         "gapfill": 315,
         "gloss": 7680
       },
-      "content_sha256": "532fa55667b63b6b445ff5bec2050703c38a3df3d5e134892bb65d94fed9aeff",
+      "content_sha256": "e8dfe2ca9e6a5b8a71bd2d0b8647c7b93aa8f79d562e80dba15aaf77769db21d",
       "file": "iso=asm/data.parquet",
       "hi_conf_ge_0.9": 47321,
       "language": "Assamese",
@@ -92,7 +92,7 @@
         "gapfill": 305,
         "gloss": 6524
       },
-      "content_sha256": "b2c754341e9f6b423f04d9192206fcf0346d989fb7c6e35d60d6fb6084d7855a",
+      "content_sha256": "72f1644d72f4bd78e58f6b665164ad747a0fe6e8d884f007a656c17339c12c55",
       "file": "iso=ben/data.parquet",
       "hi_conf_ge_0.9": 42120,
       "language": "Bengali",
@@ -122,26 +122,26 @@
       ],
       "books": 66,
       "by_base_text": {
-        "BSB": 85369,
+        "BSB": 83013,
         "eng_ylt": 68073
       },
       "by_method": {
         "eflomal": 94387,
-        "gapfill": 48,
-        "gloss": 59007
+        "gapfill": 87,
+        "gloss": 56612
       },
-      "content_sha256": "35e1e372335974ad4709b45cd745b25875b7e773e5b4e20274a08563b99a4024",
+      "content_sha256": "9ecb54481209cdb71969dedaba853f87212613308dde7bca8742317f82df0b24",
       "file": "iso=eng/data.parquet",
-      "hi_conf_ge_0.9": 121723,
+      "hi_conf_ge_0.9": 119210,
       "language": "English",
-      "lexemes": 13989,
+      "lexemes": 13988,
       "methods": [
         "eflomal",
         "gloss",
         "gapfill"
       ],
       "min_count": 1,
-      "rows": 153442,
+      "rows": 151086,
       "sources": {
         "BSB": {
           "edition": "BSB",
@@ -155,7 +155,7 @@
         }
       },
       "strongs": 13114,
-      "surfaces": 26752,
+      "surfaces": 26758,
       "testament": "NT+OT"
     },
     "fra": {
@@ -164,16 +164,16 @@
       ],
       "books": 66,
       "by_base_text": {
-        "fraLSG (Louis Segond 1910)": 97508
+        "fraLSG (Louis Segond 1910)": 97521
       },
       "by_method": {
         "eflomal": 61865,
-        "gapfill": 23,
+        "gapfill": 36,
         "gloss": 35620
       },
-      "content_sha256": "93be2d6da83d32189248bb81ab1c81eb20bfd857f0573fa944935b9cbf8a8e63",
+      "content_sha256": "ae554d36ad213511fb79358e6c5ac447b76abf05ab640e08dd2259c5892cf5df",
       "file": "iso=fra/data.parquet",
-      "hi_conf_ge_0.9": 74864,
+      "hi_conf_ge_0.9": 74877,
       "language": "French",
       "lexemes": 13790,
       "methods": [
@@ -182,7 +182,7 @@
         "gapfill"
       ],
       "min_count": 1,
-      "rows": 97508,
+      "rows": 97521,
       "sources": {
         "fraLSG (Louis Segond 1910)": {
           "edition": "fraLSG (Louis Segond 1910)",
@@ -207,7 +207,7 @@
         "gapfill": 42,
         "gloss": 36010
       },
-      "content_sha256": "5f2e377864a9fc34a7ba9236718c804b00f3fae45076d139d2193411e1e8c90d",
+      "content_sha256": "3a4c1209d69dd3fd63083002163d2ead8b3493dd44066148f6a90fc6761d4b6f",
       "file": "iso=hau/data.parquet",
       "hi_conf_ge_0.9": 68832,
       "language": "Hausa",
@@ -243,7 +243,7 @@
         "gapfill": 212,
         "gloss": 6678
       },
-      "content_sha256": "ebac99710272ba583bf5b3f69e601f433b7fe5486d6f1a2ff488d7b6ee4d62e6",
+      "content_sha256": "594b5f48a754d9341efd16b86103615934ce2d6c2994c62a77b2d783262b62a1",
       "file": "iso=hin/data.parquet",
       "hi_conf_ge_0.9": 38460,
       "language": "Hindi",
@@ -279,7 +279,7 @@
         "gapfill": 48,
         "gloss": 36481
       },
-      "content_sha256": "dc9aa85d86e804aa76feae73598b9f50fc48f1a39ebdbf889a983cba68e5189c",
+      "content_sha256": "427ea1f3f2c43f33f2ad4720aa63614a8a4ee5a64c7a6e82abea7714c1dafb15",
       "file": "iso=ind/data.parquet",
       "hi_conf_ge_0.9": 68284,
       "language": "Indonesian",
@@ -314,7 +314,7 @@
         "eflomal": 84755,
         "gloss": 49049
       },
-      "content_sha256": "7b6e989a703a08c1c3416652e48ebefbecdfacd4649d87691937e14d1f695dc0",
+      "content_sha256": "93efe491b5fea890cbfbbca0c0ce0220b6f80f9e27e672ae6496cd3107b72f53",
       "file": "iso=rus/data.parquet",
       "hi_conf_ge_0.9": 102727,
       "language": "Russian",
@@ -349,7 +349,7 @@
         "gapfill": 9,
         "gloss": 39370
       },
-      "content_sha256": "f2004593ef7fe64c2cf6e8c19787c91cd7018bf93da6db3e1d37a35060363cb5",
+      "content_sha256": "e19ae4a57c126f43b4a7872f963857e4deec1a32ec3869b3f549bbfdf378fe02",
       "file": "iso=spa/data.parquet",
       "hi_conf_ge_0.9": 82089,
       "language": "Spanish",
@@ -387,7 +387,7 @@
         "gapfill": 68,
         "gloss": 75664
       },
-      "content_sha256": "1b5a63bb752961ff5f56d8b840b4643ca245653f9795ffd4a32f129b97c313f1",
+      "content_sha256": "58cbd5b5deaecd236280b1a7cc5184b475b017c6e624d0962b2c0290f4c30999",
       "file": "iso=swe/data.parquet",
       "hi_conf_ge_0.9": 154437,
       "language": "Swedish",
@@ -419,11 +419,9 @@
   "schema": [
     "surface",
     "lexeme",
-    "strong",
     "method",
     "base_text",
     "count",
-    "share",
     "hi_conf"
   ]
 }

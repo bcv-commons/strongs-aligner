@@ -9,8 +9,10 @@ source of truth, just a documented reshape you (or a consumer) run on the canoni
 Two things it handles that a naive rollup gets wrong:
   1. The union has one row PER METHOD, so summing `count` across methods double-counts the same
      occurrences. We pick a single **base method** (default `eflomal`) — override with --method.
-  2. It rolls the fine `lexeme` up to its `strong` (many lexemes → one Strong's), then aggregates per
-     (strong, surface) and recomputes `share` = P(surface | strong) within Strong's.
+  2. It rolls the fine `lexeme` up to its `strong` (many lexemes → one Strong's) — `strong` isn't a
+     stored column (dropped 2026-07 as a pure, lossless function of `lexeme`; see the dataset
+     README's derivation note) — then aggregates per (strong, surface) and recomputes `share` =
+     P(surface | strong) within Strong's.
 
     python3 scripts/strongs_view.py --iso swe                         # → out/strongs_view_swe.tsv
     python3 scripts/strongs_view.py --iso swe --method gloss --min-share 0.02 --hi-conf 0.5
@@ -29,6 +31,8 @@ from lexeme_aligner.config import LEX_ROOT, OUT
 def build(iso: str, root: Path, method: str, min_share: float, hi_conf: float, min_count: int,
           base_text: str | None = None):
     import pyarrow.parquet as pq
+    from lexeme_aligner.benchmark import norm_strong    # lexeme "hbo:0871a" -> strong "H0871"
+
     fp = root / f"iso={iso}" / "data.parquet"
     if not fp.exists():
         raise SystemExit(f"no lexeme-alignments partition for {iso} at {fp}")
@@ -41,8 +45,9 @@ def build(iso: str, root: Path, method: str, min_share: float, hi_conf: float, m
             continue
         if r["count"] < min_count or (r.get("hi_conf") or 0) < hi_conf:
             continue
-        cnt[r["strong"]][r["surface"]] += r["count"]
-        hic[(r["strong"], r["surface"])] += (r.get("hi_conf") or 0) * r["count"]
+        strong = norm_strong(r["lexeme"])
+        cnt[strong][r["surface"]] += r["count"]
+        hic[(strong, r["surface"])] += (r.get("hi_conf") or 0) * r["count"]
     rows = []
     for strong, ctr in cnt.items():
         tot = sum(ctr.values())

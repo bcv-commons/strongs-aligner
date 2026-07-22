@@ -1,12 +1,19 @@
 """Aggregate per-verse alignment `.jsonl` into the published `lexeme-alignments` dataset.
 
 Lexeme-anchored, provenance-honest, additive (docs/publishing-principles.md). Data contract:
-    surface, lexeme, strong, method, count, share, hi_conf
-The anchor is the **lexeme** (MACULA `lang:augmented-strong`); `strong` is its rollup (bridge key).
+    surface, lexeme, method, base_text, count, hi_conf
+The anchor is the **lexeme** (MACULA `lang:augmented-strong`). `strong` and `share` are DELIBERATELY
+NOT stored — both are exact, lossless derivations from the stored columns, so storing them is pure
+duplication (measured 2026-07: ~32% smaller Parquet with them dropped, zero information lost):
+  - `strong` from `lexeme`: split on `:` → strip any trailing augment letter → zero-pad to 4 digits →
+    prefix H (hbo) or G (grc). e.g. "hbo:6498a" -> "H6498".
+  - `share` (P(lexeme | surface) WITHIN a (method, base_text) group) from `count`: group rows by
+    (surface, method, base_text), sum their `count`, then share = count / that sum.
+See `scripts/strongs_view.py` for a ready-made Strong's-keyed derived view that does this for you.
+
 Rows are the ADDITIVE UNION of the methods, each tagged with its source `method` (eflomal/gloss/gapfill)
-— a pair attested by two methods is two rows, nothing merged away (principles 3 + 5). `share` =
-P(lexeme | surface) computed WITHIN that method. `hi_conf` = fraction of the pair's occurrences that
-were intersection-backed (score >= 0.9). Content tokens only.
+— a pair attested by two methods is two rows, nothing merged away (principles 3 + 5). `hi_conf` =
+fraction of the pair's occurrences that were intersection-backed (score >= 0.9). Content tokens only.
 
 Scaling: the bulk data does NOT live in git (thousands of regenerated per-language files would
 bloat history forever). Instead this writes an `iso=<iso>/`-**partitioned Parquet dataset** under
@@ -34,10 +41,12 @@ from pathlib import Path
 
 from lexeme_aligner.config import LEX_ROOT, OUT, SPINE_DB
 
-SCHEMA = ["surface", "lexeme", "strong", "method", "base_text", "count", "share", "hi_conf"]
+SCHEMA = ["surface", "lexeme", "method", "base_text", "count", "hi_conf"]   # the PUBLISHED columns
 _HI_SCORE = 0.9   # eflomal intersection-backed link (both directions agree) — the reliable core
 _METHODS = ("eflomal", "gloss", "gapfill")   # union order; a method absent for an iso is simply skipped
 
+# Internal row shape keeps `strong` + `share` (needed for build_entry's testament/stat computation) —
+# they're dropped only at the write_parquet/write_tsv/_render boundary, never stored on disk.
 Row = tuple[str, str, str, str, str, int, float, float]
 
 
@@ -100,8 +109,10 @@ def aggregate(out_dir: Path, editions: list[tuple[str, str]], methods: list[str]
 
 
 def _render(rows: list[Row]) -> list[str]:
-    """Canonical per-row text — the format-independent basis for the content hash and TSV body."""
-    return [f"{s}\t{lx}\t{g}\t{m}\t{bt}\t{c}\t{sh:.4f}\t{hc:.4f}" for s, lx, g, m, bt, c, sh, hc in rows]
+    """Canonical per-row text — the format-independent basis for the content hash and TSV body.
+    `strong` + `share` (row indices 2, 6) are excluded — see the module docstring for their exact,
+    lossless derivation from `lexeme`/`count`."""
+    return [f"{s}\t{lx}\t{m}\t{bt}\t{c}\t{hc:.4f}" for s, lx, _g, m, bt, c, _sh, hc in rows]
 
 
 def write_parquet(rows: list[Row], dest: Path) -> None:
@@ -111,11 +122,9 @@ def write_parquet(rows: list[Row], dest: Path) -> None:
     table = pa.table({
         "surface": pa.array(cols[0], pa.string()),
         "lexeme": pa.array(cols[1], pa.string()),
-        "strong": pa.array(cols[2], pa.string()),
         "method": pa.array(cols[3], pa.string()),
         "base_text": pa.array(cols[4], pa.string()),
         "count": pa.array(cols[5], pa.int32()),
-        "share": pa.array([round(x, 4) for x in cols[6]], pa.float32()),
         "hi_conf": pa.array([round(x, 4) for x in cols[7]], pa.float32()),
     })
     papq.write_table(table, dest, compression="zstd")
@@ -172,11 +181,17 @@ def build_entry(rows: list[Row], iso: str, methods: list[str], min_count: int, b
     return {k: v for k, v in entry.items() if v is not None}
 
 
+_COMPANION_RESOURCES = ["light_lexemes.json", "hebrew_lexeme_strong.json", "greek_morph_strong.json",
+                        "contest_rule.json"]   # global (not per-iso) — re-uploaded each publish so they
+                                                # never drift out of sync; see README's "Companion reference
+                                                # resources" section for what each one is
+
+
 def publish_to_hf(root: Path, iso: str, rel_file: str, entry: dict,
                   repo_id: str, create: bool, dry_run: bool) -> None:
-    """Upload this language's partition + the manifest + the dataset card to a HF dataset repo.
-    Only these three paths are pushed — other isos' local partitions (git-ignored) are untouched."""
-    uploads = [rel_file, "manifest.json", "README.md"]
+    """Upload this language's partition + the manifest + the dataset card + the companion reference
+    resources to a HF dataset repo. Other isos' local partitions (git-ignored) are untouched."""
+    uploads = [rel_file, "manifest.json", "README.md", *_COMPANION_RESOURCES]
     present = [f for f in uploads if (root / f).exists()]
     print(f"[publish] → dataset '{repo_id}'  files: {present}", file=sys.stderr)
     if dry_run:
